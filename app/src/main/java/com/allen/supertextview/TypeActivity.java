@@ -71,6 +71,7 @@ public class TypeActivity extends AppCompatActivity {
         String url3 = "https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=3860616424,1789830124&fm=80&w=179&h=119&img.PNG";
         String url4 = "http://osnoex6vf.bkt.clouddn.com/original_label.png";
 
+        superTextView.getLeftIconIV().setDisableCircularTransformation(false);
         Picasso.with(this)
                 .load(url1)
                 .placeholder(R.drawable.head_default)

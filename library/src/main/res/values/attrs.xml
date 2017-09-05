@@ -209,6 +209,18 @@
         <attr name="sShapeStrokeColor" format="color" />
 
         <attr name="sUseShape" format="boolean" />
+        <!-- -->
+        <attr name="sLeftCivDisableCircularTransformation" format="boolean" />
+        <attr name="sLeftCivBorderWidth" format="dimension" />
+        <attr name="sLeftCivBorderColor" format="color" />
+        <attr name="sLeftCivBorderOverlay" format="boolean" />
+        <attr name="sLeftCivFillColor" format="color" />
+
+        <attr name="sRightCivDisableCircularTransformation" format="boolean" />
+        <attr name="sRightCivBorderWidth" format="dimension" />
+        <attr name="sRightCivBorderColor" format="color" />
+        <attr name="sRightCivBorderOverlay" format="boolean" />
+        <attr name="sRightCivFillColor" format="color" />
 
     </declare-styleable>
 
@@ -412,4 +424,12 @@
 
 
     </declare-styleable>
+
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_fill_color" format="color" />
+    </declare-styleable>
+
 </resources>

@@ -2,6 +2,7 @@ package com.allen.library;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
@@ -31,7 +32,7 @@ public class SuperTextView extends RelativeLayout {
     private BaseTextView leftView, centerView, rightView;
     private LayoutParams leftBaseViewParams, centerBaseViewParams, rightBaseViewParams;
 
-    private ImageView leftIconIV, rightIconIV;
+    private CircleImageView leftIconIV, rightIconIV;
     private LayoutParams leftImgParams, rightImgParams;
     private int leftIconWidth;//左边图标的宽
     private int leftIconHeight;//左边图标的高
@@ -278,6 +279,23 @@ public class SuperTextView extends RelativeLayout {
 
     private GradientDrawable gradientDrawable;
 
+    private static final int DEFAULT_BORDER_WIDTH = 0;
+    private static final int DEFAULT_BORDER_COLOR = Color.BLACK;
+    private static final int DEFAULT_FILL_COLOR = Color.TRANSPARENT;
+    private static final boolean DEFAULT_BORDER_OVERLAY = false;
+
+    private int mLeftBorderColor = DEFAULT_BORDER_COLOR;
+    private int mLeftBorderWidth = DEFAULT_BORDER_WIDTH;
+    private int mLeftFillColor = DEFAULT_FILL_COLOR;
+    private boolean mLeftBorderOverlay;
+    private boolean mLeftDisableCircularTransformation;
+
+    private int mRightBorderColor = DEFAULT_BORDER_COLOR;
+    private int mRightBorderWidth = DEFAULT_BORDER_WIDTH;
+    private int mRightFillColor = DEFAULT_FILL_COLOR;
+    private boolean mRightBorderOverlay;
+    private boolean mRightDisableCircularTransformation;
+
     public SuperTextView(Context context) {
         this(context, null);
     }
@@ -489,6 +507,19 @@ public class SuperTextView extends RelativeLayout {
 
         useShape = typedArray.getBoolean(R.styleable.SuperTextView_sUseShape, false);
 
+        //////////////////////////////////////////////////
+        mLeftDisableCircularTransformation = typedArray.getBoolean(R.styleable.SuperTextView_sLeftCivDisableCircularTransformation, true);
+        mLeftBorderWidth = typedArray.getDimensionPixelSize(R.styleable.SuperTextView_sLeftCivBorderWidth, DEFAULT_BORDER_WIDTH);
+        mLeftBorderColor = typedArray.getColor(R.styleable.SuperTextView_sLeftCivBorderColor, DEFAULT_BORDER_COLOR);
+        mLeftBorderOverlay = typedArray.getBoolean(R.styleable.SuperTextView_sLeftCivBorderOverlay, DEFAULT_BORDER_OVERLAY);
+        mLeftFillColor = typedArray.getColor(R.styleable.SuperTextView_sLeftCivFillColor, DEFAULT_FILL_COLOR);
+
+        mRightDisableCircularTransformation = typedArray.getBoolean(R.styleable.SuperTextView_sRightCivDisableCircularTransformation, true);
+        mRightBorderWidth = typedArray.getDimensionPixelSize(R.styleable.SuperTextView_sRightCivBorderWidth, DEFAULT_BORDER_WIDTH);
+        mRightBorderColor = typedArray.getColor(R.styleable.SuperTextView_sRightCivBorderColor, DEFAULT_BORDER_COLOR);
+        mRightBorderOverlay = typedArray.getBoolean(R.styleable.SuperTextView_sRightCivBorderOverlay, DEFAULT_BORDER_OVERLAY);
+        mRightFillColor = typedArray.getColor(R.styleable.SuperTextView_sRightCivFillColor, DEFAULT_FILL_COLOR);
+
         typedArray.recycle();
     }
 
@@ -558,7 +589,7 @@ public class SuperTextView extends RelativeLayout {
      */
     private void initLeftIcon() {
         if (leftIconIV == null) {
-            leftIconIV = new ImageView(mContext);
+            leftIconIV = new CircleImageView(mContext);
         }
         leftImgParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         leftImgParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, TRUE);
@@ -567,22 +598,25 @@ public class SuperTextView extends RelativeLayout {
             leftImgParams.width = leftIconWidth;
             leftImgParams.height = leftIconHeight;
         }
-        leftIconIV.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//        leftIconIV.setScaleType(ImageView.ScaleType.FIT_CENTER);
         leftIconIV.setId(R.id.sLeftImgId);
         leftIconIV.setLayoutParams(leftImgParams);
         if (leftIconRes != null) {
             leftImgParams.setMargins(leftIconMarginLeft, 0, 0, 0);
             leftIconIV.setImageDrawable(leftIconRes);
         }
+        setCircleImage(leftIconIV, mLeftDisableCircularTransformation, mLeftBorderOverlay, mLeftBorderWidth, mLeftBorderColor, mLeftFillColor);
+
         addView(leftIconIV);
     }
+
 
     /**
      * 初始化右边图标
      */
     private void initRightIcon() {
         if (rightIconIV == null) {
-            rightIconIV = new ImageView(mContext);
+            rightIconIV = new CircleImageView(mContext);
         }
         rightImgParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         rightImgParams.addRule(RelativeLayout.CENTER_VERTICAL, TRUE);
@@ -604,13 +638,15 @@ public class SuperTextView extends RelativeLayout {
             rightImgParams.height = rightIconHeight;
         }
 
-        rightIconIV.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//        rightIconIV.setScaleType(ImageView.ScaleType.FIT_CENTER);
         rightIconIV.setId(R.id.sRightImgId);
         rightIconIV.setLayoutParams(rightImgParams);
         if (rightIconRes != null) {
             rightImgParams.setMargins(0, 0, rightIconMarginRight, 0);
             rightIconIV.setImageDrawable(rightIconRes);
         }
+        setCircleImage(rightIconIV, mRightDisableCircularTransformation, mRightBorderOverlay, mRightBorderWidth, mRightBorderColor, mRightFillColor);
+
         addView(rightIconIV);
     }
 
@@ -795,6 +831,24 @@ public class SuperTextView extends RelativeLayout {
     }
 
     /////////////////////////////////////默认属性设置----begin/////////////////////////////////
+
+    /**
+     * 设置圆形ImageView属性
+     *
+     * @param circleImageView               view
+     * @param disableCircularTransformation 是否允许圆形转换  默认true
+     * @param borderOverlay                 borderOverlay
+     * @param borderWidth                   变宽宽度
+     * @param borderColor                   边框颜色
+     * @param fillColor                     填充色
+     */
+    private void setCircleImage(CircleImageView circleImageView, boolean disableCircularTransformation, boolean borderOverlay, int borderWidth, int borderColor, int fillColor) {
+        circleImageView.setDisableCircularTransformation(disableCircularTransformation);
+        circleImageView.setBorderOverlay(borderOverlay);
+        circleImageView.setBorderWidth(borderWidth);
+        circleImageView.setBorderColor(borderColor);
+//        circleImageView.setFillColor(fillColor);
+    }
 
     /**
      * 初始化BaseTextView
@@ -1508,7 +1562,7 @@ public class SuperTextView extends RelativeLayout {
      *
      * @return ImageView
      */
-    public ImageView getLeftIconIV() {
+    public CircleImageView getLeftIconIV() {
         leftImgParams.setMargins(leftIconMarginLeft, 0, 0, 0);
         return leftIconIV;
     }
@@ -1518,7 +1572,7 @@ public class SuperTextView extends RelativeLayout {
      *
      * @return ImageView
      */
-    public ImageView getRightIconIV() {
+    public CircleImageView getRightIconIV() {
         rightImgParams.setMargins(0, 0, rightIconMarginRight, 0);
         return rightIconIV;
     }
